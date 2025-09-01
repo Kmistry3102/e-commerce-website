@@ -1,7 +1,12 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
+import React from 'react';
 
-export default function Home() {
+const MainApp = () => {
   return (
-    <Button variant="outline">Click Me</Button>
+    <div>
+      <Button >Click Me</Button>
+    </div>
   );
-}
+};
+
+export default MainApp;
