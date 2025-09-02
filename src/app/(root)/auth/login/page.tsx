@@ -1,12 +1,132 @@
-import { Card, CardContent } from '@/components/ui/card';
-import React from 'react';
+"use client";
 
-const LoginPage = () => {
-    return (
-      <Card>
-        <CardContent></CardContent>
-      </Card>
-    );
-};
+import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
+import {
+  Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import ButtonLoading from "@/components/Application/ButtonLoading";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useState } from "react";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
-export default LoginPage;
+import { loginSchema, type LoginValues } from "@/lib/zodSchema";
+// import { WEBSITE_REGISTER } from "@/routes/WebsiteRoute"; // if you have this
+
+export default function LoginPage() {
+  const [loading, setLoading] = useState(false);
+  const [showPwd, setShowPwd] = useState(false);
+
+  const form = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+    mode: "onSubmit",
+  });
+
+  const onSubmit = async (data: LoginValues) => {
+    setLoading(true);
+    try {
+      console.log("login payload:", data);
+      // await loginApi(data)
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Card className="lg:w-[400px] w-[300px] mx-auto my-10 shadow-lg">
+      <CardContent>
+        <div className="flex justify-center">
+          <Image
+            src="/assets/images/logo-black.png"
+            alt="Logo"
+            width={150}
+            height={150}
+            className="lg:max-w-[150px] max-w-[100px]"
+          />
+        </div>
+
+        <div className="text-center mt-3 space-y-1">
+          <h1 className="lg:text-3xl text-xl font-medium">Login Into Account</h1>
+          <p className="lg:text-base text-sm font-light">
+            Login into your account by filling out the form below.
+          </p>
+        </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
+            {/* Email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      autoComplete="username"
+                      placeholder="example@gmail.com"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Password */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="relative">
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type={showPwd ? "text" : "password"}
+                      autoComplete="current-password"
+                      placeholder="*********"
+                      {...field}
+                    />
+                  </FormControl>
+                  <button
+                    type="button"
+                    className="absolute right-3 top-8 cursor-pointer"
+                    onClick={() => setShowPwd((v) => !v)}
+                    aria-label={showPwd ? "Hide password" : "Show password"}
+                  >
+                    {showPwd ? <FaRegEyeSlash /> : <FaRegEye />}
+                  </button>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-center">
+              <ButtonLoading loading={loading} type="submit" text="Login" className="w-full cursor-pointer" />
+            </div>
+
+            <div className="text-center">
+              <div className="flex gap-1 items-center justify-center text-sm">
+                <p>Don&apos;t have an account?</p>
+                <Link href="/auth/register" className="cursor-pointer hover:underline text-primary">
+                  Create account!
+                </Link>
+                {/* Or use WEBSITE_REGISTER if you have it */}
+              </div>
+              <div>
+                <Link href="/auth/forgot-password" className="cursor-pointer hover:underline text-sm text-primary">
+                  Forgot Password?
+                </Link>
+              </div>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+}
