@@ -3,7 +3,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import {
-  Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import ButtonLoading from "@/components/Application/ButtonLoading";
@@ -37,7 +42,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="lg:w-[400px] w-[300px] mx-auto my-10 shadow-lg">
+    <Card className="lg:w-[400px] md:w-[350px] w-[300px] mx-auto my-10 shadow-lg">
       <CardContent>
         <div className="flex justify-center">
           <Image
@@ -50,14 +55,19 @@ export default function LoginPage() {
         </div>
 
         <div className="text-center mt-3 space-y-1">
-          <h1 className="lg:text-3xl text-xl font-medium">Login Into Account</h1>
+          <h1 className="lg:text-3xl text-xl font-medium">
+            Login Into Account
+          </h1>
           <p className="lg:text-base text-sm font-light">
             Login into your account by filling out the form below.
           </p>
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 mt-6"
+          >
             {/* Email */}
             <FormField
               control={form.control}
@@ -107,19 +117,33 @@ export default function LoginPage() {
             />
 
             <div className="flex justify-center">
-              <ButtonLoading loading={loading} type="submit" text="Login" className="w-full cursor-pointer" />
+              <ButtonLoading
+                loading={loading}
+                type="submit"
+                text="Login"
+                className="w-full cursor-pointer"
+              />
             </div>
 
             <div className="text-center">
               <div className="flex gap-1 items-center justify-center text-sm">
-                <p>Don&apos;t have an account?</p>
-                <Link href="/auth/register" className="cursor-pointer hover:underline text-primary">
-                  Create account!
-                </Link>
+                <p>
+                  Don&apos;t have an account? {""}
+                  <Link
+                    href="/auth/register"
+                    className="cursor-pointer hover:underline text-primary"
+                  >
+                    Create account!
+                  </Link>
+                </p>
+
                 {/* Or use WEBSITE_REGISTER if you have it */}
               </div>
               <div>
-                <Link href="/auth/forgot-password" className="cursor-pointer hover:underline text-sm text-primary">
+                <Link
+                  href="/auth/forgot-password"
+                  className="cursor-pointer hover:underline text-sm text-primary"
+                >
                   Forgot Password?
                 </Link>
               </div>

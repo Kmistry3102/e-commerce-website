@@ -53,10 +53,28 @@ export async function POST(req: Request) {
       .setProtectedHeader({ alg: "HS256" })
       .sign(secret);
 
-    
-    await sendMail('Email Verifiacation request from Mistry Khushi', email, emailVerificationLink(`${process.env.NEXT_PUBLIC_BASE_URL}/verify-email/${token}`));  
+    const emailResult = await sendMail(
+      "Email Verification request from Mistry Khushi",
+      email,
+      emailVerificationLink(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-email/${token}`
+      )
+    );
 
-    return response(true, 201, "Account created successfully. Please verify your email.");
+    if (!emailResult.success) {
+      console.error("Email sending failed:", emailResult.message);
+      return response(
+        false,
+        500,
+        "Account created but email verification failed to send. Please try again later."
+      );
+    }
+
+    return response(
+      true,
+      201,
+      "Account created successfully. Please verify your email."
+    );
 
     // 6) Hash password
     // const passwordHash = await bcrypt.hash(password, 12);
