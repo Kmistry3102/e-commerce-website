@@ -48,6 +48,22 @@ export const signupSchema = z.object({
   }
 });
 
+const otp6 = z
+  .string()
+  .trim()
+  .regex(/^\d{6}$/, "Enter the 6-digit code");
+
+// Verify-OTP schema (email + code)
+export const verifyOtpSchema = z.object({
+  email,         // reuse the email schema you already defined above
+  otp: otp6,
+});
+
+// (optional) Resend-OTP schema (only email)
+export const resendOtpSchema = z.object({
+  email,
+});
+
 export type LoginValues  = z.infer<typeof loginSchema>;
 export type SignupValues = z.infer<typeof signupSchema>;
 
@@ -57,3 +73,5 @@ export function makeAuthSchema(kind: "signup"): typeof signupSchema;
 export function makeAuthSchema(kind: "login" | "signup") {
   return kind === "login" ? loginSchema : signupSchema;
 }
+export type VerifyOtpValues  = z.infer<typeof verifyOtpSchema>;
+export type ResendOtpValues  = z.infer<typeof resendOtpSchema>;

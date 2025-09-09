@@ -46,7 +46,7 @@ export default function EmailVerification() {
                 />
               </div>
               <div className="text-center">
-                <h1 className="lg:text-2xl lg:my-4 my-2 text-xl font-medium text-green-600">
+                <h1 className="lg:text-2xl lg:mb-4 mb-2 text-xl font-medium text-green-600">
                   Email Verification success !
                 </h1>
                 <Button asChild>
@@ -66,7 +66,7 @@ export default function EmailVerification() {
                 />
               </div>
               <div className="text-center">
-                <h1 className="lg:text-2xl lg:my-4 my-2 text-xl font-medium text-red-600">
+                <h1 className="lg:text-2xl lg:mb-4 mb-2 text-xl font-medium text-red-600">
                   Email Verification Failed !
                 </h1>
                 <Button asChild >

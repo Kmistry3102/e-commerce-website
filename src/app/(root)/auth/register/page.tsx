@@ -20,6 +20,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { signupSchema, type SignupValues } from "@/lib/zodSchema";
 import { WEBSITE_LOGIN } from "@/routes/WebsiteRoute";
 import axios from "axios";
+import { showToast } from "@/lib/showToast";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
@@ -44,15 +45,17 @@ export default function RegisterPage() {
         "/api/auth/register",
         data
       );
-      
+
       if (registerResponse.success) {
         form.reset();
-        alert(registerResponse.message);
+        showToast({ type: "success", message: registerResponse.message });
       } else {
-        alert(registerResponse.message);
+        showToast({ type: "error", message: registerResponse.message });
       }
     } catch (error: any) {
-      alert(error.response?.data?.message || error.message || "Registration failed");
+      alert(
+        error.response?.data?.message || error.message || "Registration failed"
+      );
     } finally {
       setLoading(false);
     }

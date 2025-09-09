@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Bricolage_Grotesque } from "next/font/google";
+import { ToastContainer } from "react-toastify";
 
 const bricolage = Bricolage_Grotesque({
   weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
   display: "swap",
-})
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,7 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${bricolage.className} antialiased`}>{children}</body>
+      <body className={`${bricolage.className} antialiased`}>
+        <ToastContainer />
+        {children}
+      </body>
     </html>
   );
 }
