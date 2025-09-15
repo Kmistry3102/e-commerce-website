@@ -1,6 +1,6 @@
 import { verifyOtpSchema, VerifyOtpValues } from "@/lib/zodSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import ButtonLoading from "./ButtonLoading";
 import {
@@ -12,6 +12,9 @@ import {
   FormMessage,
 } from "../ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
+import { OtpApiResponse } from "@/app/(root)/auth/login/page";
+import axios, { AxiosError } from "axios";
+import { showToast } from "@/lib/showToast";
 
 interface OTPProps {
   email: string;
@@ -25,6 +28,8 @@ export default function OTPVerification({
   onSubmit,
   loading,
 }: OTPProps) {
+  const [isResendingOTP, setIsResendingOTP] = useState(false);
+
   const form = useForm<VerifyOtpValues>({
     resolver: zodResolver(verifyOtpSchema), // <- uses 6-digit OTP schema
     defaultValues: { email, otp: "" },
@@ -33,6 +38,28 @@ export default function OTPVerification({
 
   const handleOTPSubmit = async (data: VerifyOtpValues) => {
     onSubmit(data);
+  };
+
+  const resendOtp = async () => {
+    setIsResendingOTP(true);
+    try {
+      const { data } = await axios.post<OtpApiResponse>(
+        "/api/auth/resend-otp",
+        { email }
+      );
+
+      if (!data.success) {
+        showToast({ type: "error", message: data.message });
+      }
+    } catch (err) {
+      const e = err as AxiosError<{ message?: string }>;
+      showToast({
+        type: "error",
+        message: e.response?.data?.message ?? e.message ?? "Login failed",
+      });
+    } finally {
+      setIsResendingOTP(false);
+    }
   };
 
   return (
@@ -55,29 +82,49 @@ export default function OTPVerification({
           {/* OTP */}
           <div className="">
             <FormField
-            control={form.control}
-            name="otp"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="ml-10 lg:ml-22">One-time Password (OTP)</FormLabel>
-                <FormControl>
-                  <div className="flex justify-center">
-                    <InputOTP maxLength={6} {...field}>
-                      <InputOTPGroup>
-                        <InputOTPSlot className="text-lg lg:text-xl size-10" index={0} />
-                        <InputOTPSlot className="text-lg lg:text-xl size-10" index={1} />
-                        <InputOTPSlot className="text-lg lg:text-xl size-10" index={2} />
-                        <InputOTPSlot className="text-lg lg:text-xl size-10" index={3} />
-                        <InputOTPSlot className="text-lg lg:text-xl size-10" index={4} />
-                        <InputOTPSlot className="text-lg lg:text-xl size-10" index={5} />
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                </FormControl>
-                <FormMessage className="text-center" />
-              </FormItem>
-            )}
-          />
+              control={form.control}
+              name="otp"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="ml-10 lg:ml-22">
+                    One-time Password (OTP)
+                  </FormLabel>
+                 <FormControl>
+                    <div className="flex justify-center">
+                      <InputOTP maxLength={6} {...field}>
+                        <InputOTPGroup>
+                          <InputOTPSlot
+                            className="text-lg lg:text-xl size-10"
+                            index={0}
+                          />
+                          <InputOTPSlot
+                            className="text-lg lg:text-xl size-10"
+                            index={1}
+                          />
+                          <InputOTPSlot
+                            className="text-lg lg:text-xl size-10"
+                            index={2}
+                          />
+                          <InputOTPSlot
+                            className="text-lg lg:text-xl size-10"
+                            index={3}
+                          />
+                          <InputOTPSlot
+                            className="text-lg lg:text-xl size-10"
+                            index={4}
+                          />
+                          <InputOTPSlot
+                            className="text-lg lg:text-xl size-10"
+                            index={5}
+                          />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-center" />
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="mb-3">
@@ -88,7 +135,17 @@ export default function OTPVerification({
               className="w-full cursor-pointer"
             />
             <div className="text-center mt-3">
-                <button type="button" className="text-blue-600 hover:underline cursor-pointer">Resend OTP</button>
+              {isResendingOTP ? (
+                <span className="text-base">Resending...</span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={resendOtp}
+                  className="text-blue-600 hover:underline cursor-pointer"
+                >
+                  Resend OTP
+                </button>
+              )}
             </div>
           </div>
         </form>

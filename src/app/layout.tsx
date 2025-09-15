@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Bricolage_Grotesque } from "next/font/google";
 import { ToastContainer } from "react-toastify";
+import { GlobalProvider } from "@/components/Application/GlobalProvider";
 
 const bricolage = Bricolage_Grotesque({
   weight: ["400", "500", "600", "700", "800"],
@@ -22,8 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${bricolage.className} antialiased`}>
-        <ToastContainer />
-        {children}
+        <GlobalProvider>
+          <ToastContainer />
+          {children}
+        </GlobalProvider>
       </body>
     </html>
   );

@@ -20,21 +20,23 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { loginSchema, VerifyOtpValues, type LoginValues } from "@/lib/zodSchema";
 import axios, { AxiosError } from "axios";
 import { showToast } from "@/lib/showToast";
-import { WEBSITE_HOME, WEBSITE_REGISTER } from "@/routes/WebsiteRoute";
+import { WEBSITE_REGISTER, WEBSITE_RESET_PASSWORD } from "@/routes/WebsiteRoute";
 import OTPVerification from "@/components/Application/OTPVerification";
-// import OTPVerification from "@/components/auth/OTPVerification"; // if you have it
+import { useDispatch } from "react-redux";
+import { login } from "@/store/reducer/authReducer";
 
 type LoginApiResponse = {
   success: boolean;
   message: string;
 };
 
-type OtpApiResponse = {
+export type OtpApiResponse = {
   success: boolean;
   message: string;
 };
 
 export default function LoginPage() {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [otpVerificationLoading, setOtpVerificationLoading] = useState(false);
   const [showPwd, setShowPwd] = useState(false);
@@ -82,8 +84,9 @@ export default function LoginPage() {
       );
 
       if (data.success) {
-        setOtpEmail(values.email);
+        setOtpEmail(null); // Reset to show login form again
         showToast({ type: "success", message: data.message });
+        dispatch(login(data));
       } else {
         showToast({ type: "error", message: data.message });
       }
@@ -198,7 +201,7 @@ export default function LoginPage() {
                   </div>
                   <div>
                     <Link
-                      href={WEBSITE_HOME}
+                      href={WEBSITE_RESET_PASSWORD}
                       className="cursor-pointer hover:underline text-sm text-primary"
                     >
                       Forgot Password?

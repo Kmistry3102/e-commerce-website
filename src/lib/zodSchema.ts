@@ -64,14 +64,20 @@ export const resendOtpSchema = z.object({
   email,
 });
 
+export const resetPasswordSchema = z.object({
+  email,
+});
+
 export type LoginValues  = z.infer<typeof loginSchema>;
 export type SignupValues = z.infer<typeof signupSchema>;
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
 /* Optional: typed factory with overloads (useful elsewhere) */
 export function makeAuthSchema(kind: "login"): typeof loginSchema;
 export function makeAuthSchema(kind: "signup"): typeof signupSchema;
-export function makeAuthSchema(kind: "login" | "signup") {
-  return kind === "login" ? loginSchema : signupSchema;
+export function makeAuthSchema(kind: "login" | "signup" | "resetPassword"): typeof loginSchema | typeof signupSchema | typeof resetPasswordSchema;
+export function makeAuthSchema(kind: "login" | "signup" | "resetPassword") {
+  return kind === "login" ? loginSchema : kind === "signup" ? signupSchema : resetPasswordSchema;
 }
 export type VerifyOtpValues  = z.infer<typeof verifyOtpSchema>;
 export type ResendOtpValues  = z.infer<typeof resendOtpSchema>;
