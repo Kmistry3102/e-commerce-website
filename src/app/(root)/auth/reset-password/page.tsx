@@ -25,6 +25,7 @@ import { WEBSITE_LOGIN } from "@/routes/WebsiteRoute";
 import OTPVerification from "@/components/Application/OTPVerification";
 import axios, { AxiosError } from "axios";
 import { showToast } from "@/lib/showToast";
+import UpdatePassword from "@/components/Application/UpdatePassword";
 
 export default function ResetPasswordPage() {
   const form = useForm<ResetPasswordValues>({
@@ -36,32 +37,53 @@ export default function ResetPasswordPage() {
     useState(false);
   const [otpEmail, setOtpEmail] = useState<string | null>(null);
   const [otpVerificationLoading, setOtpVerificationLoading] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
 
-  const handleEmailVerification = (values: ResetPasswordValues) => {
-    console.log(values);
+  const handleEmailVerification = async (values: ResetPasswordValues) => {
+    try {
+      setEmailVerificationLoading(true);
+      const { data } = await axios.post<{ success: boolean; message: string }>(
+        "/api/auth/reset-password/send-otp",
+        values
+      );
+      if (data.success) {
+        setOtpEmail(values.email);
+      } else {
+        showToast({ type: "error", message: data.message });
+      }
+    } catch (error) {
+      const e = error as AxiosError<{ message?: string }>;
+      showToast({
+        type: "error",
+        message:
+          e.response?.data?.message ?? e.message ?? "Email verification failed",
+      });
+    } finally {
+      setEmailVerificationLoading(false);
+    }
   };
 
   // OTP Verification
   const handleOtpVerification = async (values: VerifyOtpValues) => {
     try {
       setOtpVerificationLoading(true);
-      const { data } = await axios.post<VerifyOtpValues>(
-        "/api/auth/verify-otp",
+      const { data } = await axios.post<{ success: boolean; message: string }>(
+        "/api/auth/reset-password/verify-otp",
         values
       );
-        
+
       if (data.success) {
-        setOtpEmail(null); // Reset to show login form again
         showToast({ type: "success", message: data.message });
-        // dispatch(login(data));
+        setIsOtpVerified(true);
       } else {
         showToast({ type: "error", message: data.message });
       }
-    } catch (err) {
-      const e = err as AxiosError<{ message?: string }>;
+    } catch (error) {
+      const e = error as AxiosError<{ message?: string }>;
       showToast({
         type: "error",
-        message: e.response?.data?.message ?? e.message ?? "OTP verification failed",
+        message:
+          e.response?.data?.message ?? e.message ?? "OTP verification failed",
       });
     } finally {
       setOtpVerificationLoading(false);
@@ -125,6 +147,7 @@ export default function ResetPasswordPage() {
                   />
                 </div>
 
+                {/*  Back to Login! */}
                 <div className="text-center">
                   <div className="flex gap-1 items-center justify-center text-sm">
                     <p>
@@ -142,11 +165,17 @@ export default function ResetPasswordPage() {
             </Form>
           </>
         ) : (
-          <OTPVerification
-            email={otpEmail}
-            loading={otpVerificationLoading}
-            onSubmit={handleOtpVerification}
-          />
+          <>
+            {isOtpVerified ? (
+              <UpdatePassword email={otpEmail} />
+            ) : (
+              <OTPVerification
+                email={otpEmail}
+                loading={otpVerificationLoading}
+                onSubmit={handleOtpVerification}
+              />
+            )}
+          </>
         )}
       </CardContent>
     </Card>

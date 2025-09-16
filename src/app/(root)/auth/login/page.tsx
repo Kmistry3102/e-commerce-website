@@ -17,13 +17,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useState } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { loginSchema, VerifyOtpValues, type LoginValues } from "@/lib/zodSchema";
+import {
+  loginSchema,
+  VerifyOtpValues,
+  type LoginValues,
+} from "@/lib/zodSchema";
 import axios, { AxiosError } from "axios";
 import { showToast } from "@/lib/showToast";
-import { WEBSITE_REGISTER, WEBSITE_RESET_PASSWORD } from "@/routes/WebsiteRoute";
+import {
+  WEBSITE_REGISTER,
+  WEBSITE_RESET_PASSWORD,
+  USER_DASHBOARD,
+} from "@/routes/WebsiteRoute";
 import OTPVerification from "@/components/Application/OTPVerification";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/reducer/authReducer";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { ADMIN_DASHBOARD } from "@/routes/AdminPanelRoute";
 
 type LoginApiResponse = {
   success: boolean;
@@ -33,10 +44,18 @@ type LoginApiResponse = {
 export type OtpApiResponse = {
   success: boolean;
   message: string;
+  data?: {
+    _id: string;
+    role: string;
+    name: string;
+    avatar?: string | null;
+  };
 };
 
 export default function LoginPage() {
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [otpVerificationLoading, setOtpVerificationLoading] = useState(false);
   const [showPwd, setShowPwd] = useState(false);
@@ -75,7 +94,7 @@ export default function LoginPage() {
   };
 
   // OTP Verification
-  const handleOtpVerification = async ( values :VerifyOtpValues) => {
+  const handleOtpVerification = async (values: VerifyOtpValues) => {
     try {
       setOtpVerificationLoading(true);
       const { data } = await axios.post<OtpApiResponse>(
@@ -86,7 +105,17 @@ export default function LoginPage() {
       if (data.success) {
         setOtpEmail(null); // Reset to show login form again
         showToast({ type: "success", message: data.message });
-        dispatch(login(data));
+        dispatch(login(data.data));
+        console.log(data.data?.role);
+        if (searchParams.has("callback")) {
+          router.push(searchParams.get("callback") ?? "");
+        } else {
+          if (data.data?.role === "admin") {
+            router.push(ADMIN_DASHBOARD);
+          } else {
+            router.push(USER_DASHBOARD);
+          }
+        }
       } else {
         showToast({ type: "error", message: data.message });
       }
@@ -99,7 +128,7 @@ export default function LoginPage() {
     } finally {
       setOtpVerificationLoading(false);
     }
-  }
+  };
 
   return (
     <Card className="lg:w-[400px] md:w-[350px] w-[300px] mx-auto my-10 shadow-lg">

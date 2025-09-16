@@ -68,9 +68,24 @@ export const resetPasswordSchema = z.object({
   email,
 });
 
+export const updatePasswordSchema = z.object({
+  email,
+  password: strongPassword,
+  confirmPassword: z.string(),
+}).superRefine(({ password, confirmPassword }, ctx) => {
+  if (password !== confirmPassword) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["confirmPassword"],
+      message: "Passwords do not match",
+    });
+  }
+});
+
 export type LoginValues  = z.infer<typeof loginSchema>;
 export type SignupValues = z.infer<typeof signupSchema>;
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+export type UpdatePasswordValues = z.infer<typeof updatePasswordSchema>;
 
 /* Optional: typed factory with overloads (useful elsewhere) */
 export function makeAuthSchema(kind: "login"): typeof loginSchema;
