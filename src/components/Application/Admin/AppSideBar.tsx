@@ -1,3 +1,4 @@
+"use client"
 import {
   Sidebar,
   SidebarContent,
@@ -7,6 +8,7 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import React from "react";
@@ -22,37 +24,40 @@ import Link from "next/link";
 import { LuChevronRight } from "react-icons/lu";
 
 export default function AppSideBar() {
+
+  const { toggleSidebar } = useSidebar();
+
   return (
-    <Sidebar>
+    <Sidebar className="z-50">
       <SidebarHeader className="border-b h-14">
         <div className="flex items-center justify-between px-4">
           <Image
             src="/assets/images/logo-black.png"
             alt="logo black"
-            width={100}
-            height={50}
+            width={90}
+            height={40}
             className="block dark:hidden"
           />
           <Image
             src="/assets/images/logo-white.png"
             alt="logo white"
-            width={100}
-            height={50}
+            width={90}
+            height={40}
             className="dark:block hidden"
           />
-          <Button type="button" size="icon" className="">
+          <Button onClick={toggleSidebar} type="button" size="icon" className="md:hidden">
             <IoMdClose />
           </Button>
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-4">
+      <SidebarContent className="p-3">
         <SidebarMenu>
           {adminSidebarMenu.map((menu, index) => (
             <Collapsible key={index} className="group/collapsible">
-              <SidebarMenuItem>
+              <SidebarMenuItem >
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className="font-medium px-2 py-5">
                     <Link href={menu?.url || "#"}>
                       <>
                         <menu.icon />
@@ -70,7 +75,7 @@ export default function AppSideBar() {
                     <SidebarMenuSub>
                       {menu.subMenu.map((subMenuItem, subMenuItemIndex) => (
                         <SidebarMenuSubItem key={subMenuItemIndex}>
-                          <SidebarMenuButton asChild>
+                          <SidebarMenuButton asChild className="px-2 py-5">
                             <Link href={subMenuItem.url || "#"}>
                               {subMenuItem.title}
                             </Link>

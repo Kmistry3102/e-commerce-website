@@ -1,4 +1,6 @@
-  import AppSideBar from "@/components/Application/Admin/AppSideBar";
+import AppSideBar from "@/components/Application/Admin/AppSideBar";
+import { ThemeProvider } from "@/components/Application/Admin/ThemeProvider";
+import TopBar from "@/components/Application/Admin/TopBar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 
@@ -13,9 +15,24 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SidebarProvider>
-      <AppSideBar />
-      {children}
-    </SidebarProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <SidebarProvider>
+        <AppSideBar />
+        <main className="w-full md:w-[calc(100vw-16rem)] ps-2">
+          <div className="pt-[70px] px-5 min-h-[calc(100vh-40px)] pb-10">
+            <TopBar />
+            {children}
+          </div>
+          <div className="border-t h-[40px] flex justify-center items-center bg-gray-50 dark:bg-background text-sm">
+            &copy; 2025. All Rights Reserved
+          </div>
+        </main>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 }

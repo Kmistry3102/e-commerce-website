@@ -9,7 +9,6 @@ export const authReducer = createSlice({
     initialState,
     reducers: {
         login : (state, action) => {
-            console.log("login", action.payload)
             state.auth = action.payload
         },
         logout : (state) => {
